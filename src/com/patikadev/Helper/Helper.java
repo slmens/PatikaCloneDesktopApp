@@ -43,4 +43,20 @@ public class Helper {
 
         FlatSolarizedDarkIJTheme.setup();
     }
+
+    public static void showMessage(String strMSG,String strTitle){
+        String msg;
+        switch (strMSG){
+            case "fill":
+                msg = "Please fill all the areas...";
+                break;
+            default:
+                msg = strMSG;
+                break;
+        }
+
+        JOptionPane.showMessageDialog(null,msg,strTitle,JOptionPane.INFORMATION_MESSAGE);
+
+
+    }
 }

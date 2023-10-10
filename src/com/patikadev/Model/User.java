@@ -1,7 +1,9 @@
 package com.patikadev.Model;
 
+import com.mysql.cj.util.DnsSrv;
 import com.patikadev.Helper.DBConnector;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -85,5 +87,67 @@ public class User {
             throw new RuntimeException(e);
         }
         return userList;
+    }
+
+    public static int add(String name,String uname,String pass,String type){
+        String query = "INSERT INTO user (name,uname,pass,userType) VALUES (?,?,?,?)";
+        User user = getFetch(uname);
+
+        if (user == null){
+            try {
+                PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+                pr.setString(1,name);
+                pr.setString(2,uname);
+                pr.setString(3,pass);
+                pr.setString(4,type);
+                int result = pr.executeUpdate();
+                if (result == 1){
+                    return 1;
+                }
+
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());;
+            }
+        }else{
+            return -1;
+        }
+
+        return 0;
+    }
+
+    public static User getFetch(String uname){
+        User obj = null;
+        String query = "SELECT * FROM user WHERE uname = ?";
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setString(1,uname);
+            ResultSet rs = pr.executeQuery();
+
+            if (rs.next()){
+                obj = new User(rs.getInt("id"),rs.getString("name"), rs.getString("uname"),rs.getString("pass"),rs.getString("userType"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return obj;
+    }
+
+    public static boolean delete(int id){
+        String query = "DELETE FROM user WHERE id = ?";
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setInt(1,id);
+
+            int result = pr.executeUpdate(query);
+
+            if (result == 1){
+                return true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return false;
     }
 }
