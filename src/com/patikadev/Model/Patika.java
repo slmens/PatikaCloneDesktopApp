@@ -114,7 +114,5 @@ public class Patika {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-        return false;
     }
 }
