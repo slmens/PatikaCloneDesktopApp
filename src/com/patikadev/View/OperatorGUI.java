@@ -9,10 +9,7 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 
@@ -86,6 +83,30 @@ public class OperatorGUI extends JFrame {
         JMenuItem deleteMenu = new JMenuItem(("Delete"));
         patikaMenu.add(updateMenu);
         patikaMenu.add(deleteMenu);
+        updateMenu.addActionListener(e -> {
+            int select_id = Integer.parseInt(tbl_patika_list.getValueAt(tbl_patika_list.getSelectedRow(),0).toString());
+            UpdatePatikaGUI updateGUI = new UpdatePatikaGUI(Patika.getFetch(select_id));
+            updateGUI.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    super.windowClosed(e);
+                    loadPatikaModel();
+                }
+            });
+
+        });
+
+        deleteMenu.addActionListener(e -> {
+            if (Helper.confirm("sure")){
+                int select_id = Integer.parseInt(tbl_patika_list.getValueAt(tbl_patika_list.getSelectedRow(),0).toString());
+                if (Patika.delete(select_id)){
+                    Helper.showMessage("Success","Success");
+                    loadPatikaModel();
+                }else {
+                    Helper.showMessage("Error","Error");
+                }
+            }
+        });
 
         mdl_patika_list = new DefaultTableModel();
         Object[] col_patika_list = {"ID","Patika Adı"};
@@ -152,11 +173,13 @@ public class OperatorGUI extends JFrame {
                 Helper.showMessage("fill","Warning!");
             }else {
                 int fld_user_id = Integer.parseInt(lbl_user_ID.getText());
-                if (User.delete(fld_user_id)){
-                    Helper.showMessage("You have been successfully delete this user!","Warning!");
-                    updateTable(mdl_user_list,row_user_list,tbl_user_list);
-                }else {
-                    Helper.showMessage("This user couldn't be deleted!", "Error!");
+                if (Helper.confirm("sure")){
+                    if (User.delete(fld_user_id)){
+                        Helper.showMessage("You have been successfully delete this user!","Warning!");
+                        updateTable(mdl_user_list,row_user_list,tbl_user_list);
+                    }else {
+                        Helper.showMessage("This user couldn't be deleted!", "Error!");
+                    }
                 }
             }
         });

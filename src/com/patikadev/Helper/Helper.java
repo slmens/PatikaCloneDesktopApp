@@ -56,7 +56,18 @@ public class Helper {
         }
 
         JOptionPane.showMessageDialog(null,msg,strTitle,JOptionPane.INFORMATION_MESSAGE);
+    }
 
+    public static boolean confirm(String str){
+        String msg;
+        switch (str){
+            case "sure":
+                msg = "Are you sure that you want to execute this action?";
+                break;
+            default:
+                msg = str;
+        }
 
+        return JOptionPane.showConfirmDialog(null,msg,"Warning!",JOptionPane.YES_NO_OPTION) == 0;
     }
 }

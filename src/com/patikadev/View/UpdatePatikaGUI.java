@@ -5,8 +5,6 @@ import com.patikadev.Helper.Helper;
 import com.patikadev.Model.Patika;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class UpdatePatikaGUI extends JFrame {
     private JPanel wrapper;
@@ -34,13 +32,8 @@ public class UpdatePatikaGUI extends JFrame {
                 }else {
                     Helper.showMessage("Error","Error ");
                 }
+                dispose();
             }
         });
-    }
-
-    public static void main(String[] args) {
-        Helper.themeSelecter();
-        Patika p = new Patika(1,"Frontend");
-        UpdatePatikaGUI up = new UpdatePatikaGUI(p);
     }
 }

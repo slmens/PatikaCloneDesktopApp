@@ -84,4 +84,37 @@ public class Patika {
         }
         return false;
     }
+
+    public static Patika getFetch(int id){
+        Patika obj = null;
+        String query = "SELECT * FROM patika WHERE id = ?";
+
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setInt(1,id);
+            ResultSet rs = pr.executeQuery();
+
+            if (rs.next()){
+                obj = new Patika(rs.getInt("id"), rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return obj;
+    }
+
+    public static boolean delete(int id){
+        String query = "DELETE FROM WHERE id=?";
+
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setInt(1,id);
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return false;
+    }
 }
