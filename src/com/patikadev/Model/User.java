@@ -1,5 +1,6 @@
 package com.patikadev.Model;
 
+import com.mysql.cj.CoreSession;
 import com.mysql.cj.util.DnsSrv;
 import com.patikadev.Helper.DBConnector;
 import com.patikadev.Helper.Helper;
@@ -134,8 +135,57 @@ public class User {
         return obj;
     }
 
+    public static User getFetch(int id){
+        User obj = null;
+        String query = "SELECT * FROM user WHERE id = ?";
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setInt(1,id);
+            ResultSet rs = pr.executeQuery();
+
+            if (rs.next()){
+                obj = new User(rs.getInt("id"),rs.getString("name"), rs.getString("uname"),rs.getString("pass"),rs.getString("userType"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return obj;
+    }
+
+    public static User getFetch(String uName, String pass){
+        User obj = null;
+        String query = "SELECT * FROM user WHERE uname = ? AND pass = ?";
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setString(1,uName);
+            pr.setString(2,pass);
+            ResultSet rs = pr.executeQuery();
+
+            if (rs.next()){
+                switch (rs.getString("type")){
+                    case "operator":
+                        obj = new Operator();
+                        break;
+                    default:
+                        obj = new User(rs.getInt("id"),rs.getString("name"), rs.getString("uname"),rs.getString("pass"),rs.getString("userType"));
+                        break;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return obj;
+    }
+
     public static boolean delete(int id){
         String query = "DELETE FROM user WHERE id = ?";
+        ArrayList<Course> courseList = Course.getListByUser(id);
+
+        for (Course c:courseList){
+            Course.delete(c.getId());
+        }
         try {
             PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
             pr.setInt(1,id);
