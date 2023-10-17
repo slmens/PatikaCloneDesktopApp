@@ -163,9 +163,15 @@ public class User {
             ResultSet rs = pr.executeQuery();
 
             if (rs.next()){
-                switch (rs.getString("type")){
+                switch (rs.getString("userType")){
                     case "operator":
-                        obj = new Operator();
+                        obj = new Operator(rs.getInt("id"),rs.getString("name"), rs.getString("uname"),rs.getString("pass"),rs.getString("userType"));
+                        break;
+                    case "educator":
+                        obj = new Educator(rs.getInt("id"),rs.getString("name"), rs.getString("uname"),rs.getString("pass"),rs.getString("userType"));
+                        break;
+                    case "student":
+                        obj = new Student(rs.getInt("id"),rs.getString("name"), rs.getString("uname"),rs.getString("pass"),rs.getString("userType"));
                         break;
                     default:
                         obj = new User(rs.getInt("id"),rs.getString("name"), rs.getString("uname"),rs.getString("pass"),rs.getString("userType"));

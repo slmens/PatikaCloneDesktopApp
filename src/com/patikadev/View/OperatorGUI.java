@@ -367,14 +367,7 @@ public class OperatorGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        Operator operator1 = new Operator();
-        Helper.themeSelecter();
-        operator1.setId(1);
-        operator1.setName("Selim");
-        operator1.setPass("12345");
-        operator1.setUname("Selo");
-        operator1.setType("operator");
-        OperatorGUI operatorGUI = new OperatorGUI(operator1);
+
 
     }
 }
