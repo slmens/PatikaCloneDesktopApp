@@ -51,6 +51,7 @@ public class Course {
         return courseList;
     }
 
+
     public static ArrayList<Course> getListByUser(int user_id){
         ArrayList<Course> courseList = new ArrayList<>();
         Course obj;

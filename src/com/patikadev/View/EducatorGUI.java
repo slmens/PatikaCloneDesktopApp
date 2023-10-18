@@ -6,6 +6,8 @@ import com.patikadev.Model.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class EducatorGUI extends JFrame{
@@ -21,9 +23,11 @@ public class EducatorGUI extends JFrame{
 
     private DefaultTableModel mdl_course_list;
     private Object[] row_course_list;
+    private JPopupMenu courseMenu;
 
     private DefaultTableModel mdl_content_list;
     private Object[] row_content_list;
+    private JPopupMenu contentMenu;
 
     public EducatorGUI(Educator educator){
         this.educator = educator;
@@ -37,7 +41,7 @@ public class EducatorGUI extends JFrame{
         setVisible(true);
 
         lbl_welcome.setText("Hoşgeldiniz " + educator.getName());
-        updateCourseTable(mdl_course_list,row_course_list,tbl_courses);
+        updateCourseTable(mdl_course_list,row_course_list,tbl_courses,educator);
         tbl_contents.getTableHeader().setReorderingAllowed(false);
         tbl_courses.getTableHeader().setReorderingAllowed(false);
         tbl_courses.getColumnModel().getColumn(0).setMaxWidth(75);
@@ -47,7 +51,55 @@ public class EducatorGUI extends JFrame{
         tbl_contents.getColumnModel().getColumn(1).setMinWidth(100);
         tbl_contents.getColumnModel().getColumn(2).setMinWidth(150);
 
+        contentMenu = new JPopupMenu();
+        JMenuItem contentLook = new JMenuItem("Enter the Content");
+        JMenuItem contentDelete = new JMenuItem("Delete");
+        contentMenu.add(contentLook);
+        contentMenu.add(contentDelete);
+        tbl_contents.setComponentPopupMenu(contentMenu);
 
+
+        contentDelete.addActionListener(e -> {
+            try {
+                int selectedContentID = (int) tbl_contents.getValueAt(tbl_contents.getSelectedRow(),0);
+                Content content = Content.getContentByID(String.valueOf(selectedContentID));
+
+                boolean result = Content.delete(selectedContentID);
+                if (result){
+                    Helper.showMessage("Success","Success");
+                    updateContentsTable(mdl_content_list,row_content_list,tbl_contents,content.getCourse_belong_to());
+                }
+            }catch (Exception ex){
+            }
+        });
+
+        contentLook.addActionListener(e -> {
+            try {
+                String selectedContentID = tbl_contents.getValueAt(tbl_contents.getSelectedRow(),0).toString();
+                ContentLookGUI contentLookGUI = new ContentLookGUI(selectedContentID);
+            }catch (Exception ex){
+                //Helper.showMessage("Please select the row properly!","Warning!" );
+            }
+
+        });
+
+        courseMenu = new JPopupMenu();
+        JMenuItem addContentMenu = new JMenuItem("Add Content");
+        courseMenu.add(addContentMenu);
+        tbl_courses.setComponentPopupMenu(courseMenu);
+
+        addContentMenu.addActionListener(e -> {
+            String selectedCourseName = tbl_courses.getValueAt(tbl_courses.getSelectedRow(),1).toString();
+            ContentAddGUI contentGUI = new ContentAddGUI(selectedCourseName);
+            contentGUI.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    super.windowClosed(e);
+                    updateContentsTable(mdl_content_list,row_content_list,tbl_contents,selectedCourseName);
+                }
+            });
+
+        });
 
         // SELECTION MODEL
         tbl_courses.getSelectionModel().addListSelectionListener(e -> {
@@ -59,7 +111,7 @@ public class EducatorGUI extends JFrame{
                 tbl_contents.getColumnModel().getColumn(2).setMinWidth(150);
 
             }catch (Exception exc){
-
+                System.out.println("seçilemedi");
             }
         });
 
@@ -72,7 +124,8 @@ public class EducatorGUI extends JFrame{
 
 
 
-    public static void updateCourseTable(DefaultTableModel mdl_course_list, Object[] row_course_list, JTable tbl_courses){
+
+    public static void updateCourseTable(DefaultTableModel mdl_course_list, Object[] row_course_list, JTable tbl_courses, Educator educator){
         DefaultTableModel clearModel = (DefaultTableModel) tbl_courses.getModel();
         clearModel.setRowCount(0);
 
@@ -89,7 +142,7 @@ public class EducatorGUI extends JFrame{
         mdl_course_list.setColumnIdentifiers(col_course_list);
 
         ArrayList<Course> courseList;
-        courseList = Course.getList();
+        courseList = Course.getListByUser(educator.getId());
         for (Course course:courseList){
             row_course_list = new Object[]{course.getId(),course.getName(),course.getEducator().getName(),course.getPatika().getName(),course.getLang()};
             mdl_course_list.addRow(row_course_list);

@@ -1,6 +1,7 @@
 package com.patikadev.Model;
 
 import com.patikadev.Helper.DBConnector;
+import com.patikadev.View.ContentLookGUI;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,15 +13,83 @@ public class Content {
     private int id;
     private String contentName;
     private String course_belong_to;
+    private String contentDescription;
+    private String contentLink;
+    private int isCompleted;
+    ArrayList<Quiz> quizArray = new ArrayList<>();
 
-    public Content(int id, String contentName, String course_belong_to) {
+    public Content(int id, String contentName, String course_belong_to,String contentDescription,String contentLink,ArrayList<Quiz> quizArr) {
         this.id = id;
         this.contentName = contentName;
         this.course_belong_to = course_belong_to;
+        this.contentDescription = contentDescription;
+        this.contentLink = contentLink;
+        this.quizArray = quizArr;
+    }
+
+    public static boolean delete(int id){
+        String query = "DELETE FROM contents WHERE id = ?";
+
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setInt(1,id);
+
+            int result = pr.executeUpdate();
+
+            if (result == 1){
+                return true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return false;
+    }
+
+    public static Content getContentByID(String id){
+        Content obj = null;
+        try {
+            PreparedStatement pst = DBConnector.getInstance().prepareStatement("SELECT * FROM contents WHERE id = ?");
+            pst.setString(1, id);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()){
+                int ID = rs.getInt("id");
+                String name = rs.getString("name");
+                String course_belong_to = rs.getString("course_belong_to");
+                String content_desc = rs.getString("content_desc");
+                String content_link = rs.getString("content_link");
+
+                ArrayList<Quiz> quizList = new ArrayList<>();
+                quizList = Quiz.getList(name);
+
+                obj = new Content(ID,name,course_belong_to,content_desc,content_link,quizList);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return obj;
+    }
+
+    public static boolean add(String name,String course_belong_to,String content_desc,String content_link){
+        String query = "INSERT INTO contents (name,course_belong_to,content_desc,content_link) VALUES (?,?,?,?)";
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setString(1,name);
+            pr.setString(2,course_belong_to);
+            pr.setString(3,content_desc);
+            pr.setString(4,content_link);
+
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static ArrayList<Content> getList(String courseName){
         ArrayList<Content> contentList = new ArrayList<>();
+        ArrayList<Quiz> quizList = new ArrayList<>();
         Content obj;
         String query = "SELECT * FROM contents WHERE course_belong_to = ?";
         try {
@@ -32,8 +101,12 @@ public class Content {
                 int id = rs.getInt("id");
                 String contentName = rs.getString("name");
                 String courseNameBelongTo = rs.getString("course_belong_to");
+                String content_desc = rs.getString("content_desc");
+                String content_link = rs.getString("content_link");
 
-                obj = new Content(id,contentName,courseNameBelongTo);
+                quizList = Quiz.getList(contentName);
+
+                obj = new Content(id,contentName,courseNameBelongTo,content_desc,content_link,quizList);
                 contentList.add(obj);
             }
         } catch (SQLException e) {
@@ -43,6 +116,17 @@ public class Content {
         return contentList;
     }
 
+    public ArrayList<Quiz> getQuizArray() {
+        return quizArray;
+    }
+
+    public String getContentDescription() {
+        return contentDescription;
+    }
+
+    public String getContentLink() {
+        return contentLink;
+    }
 
     public int getId() {
         return id;
