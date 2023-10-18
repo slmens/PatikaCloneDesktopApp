@@ -6,9 +6,12 @@ import com.patikadev.Model.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class EducatorGUI extends JFrame{
     private JPanel wrapper;
@@ -19,6 +22,9 @@ public class EducatorGUI extends JFrame{
     private JTable tbl_contents;
     private JPanel wrapper_top;
     private JLabel lbl_contents;
+    private JTextField txt_search_content_name;
+    private JTextField txt_search_course_name;
+    private JButton btn_search;
     Educator educator;
 
     private DefaultTableModel mdl_course_list;
@@ -70,6 +76,7 @@ public class EducatorGUI extends JFrame{
                     updateContentsTable(mdl_content_list,row_content_list,tbl_contents,content.getCourse_belong_to());
                 }
             }catch (Exception ex){
+                System.out.println("Bu satırda sorun var");
             }
         });
 
@@ -120,6 +127,23 @@ public class EducatorGUI extends JFrame{
             dispose();
             LogInGUI login = new LogInGUI();
         });
+
+        btn_search.addActionListener(e -> {
+            String contentName = txt_search_content_name.getText();
+            String courseName = txt_search_course_name.getText();
+            ArrayList<Content> filteredContentList = new ArrayList<>();
+
+            if (!contentName.isEmpty() || !courseName.isEmpty()){
+                if (!Objects.equals(courseName, " ") || !contentName.equals(" ")){
+                    filteredContentList = Content.searchContentList(contentName,courseName);
+
+                    updateContentsTable(mdl_content_list,row_content_list,tbl_contents,filteredContentList);
+                }
+            }else {
+                String selected_course_name = tbl_courses.getValueAt(tbl_courses.getSelectedRow(),1).toString();
+                updateContentsTable(mdl_content_list,row_content_list,tbl_contents,selected_course_name);
+            }
+        });
     }
 
 
@@ -158,7 +182,9 @@ public class EducatorGUI extends JFrame{
         mdl_content_list = new DefaultTableModel(){
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false;
+
+                    return false;
+
                 //return super.isCellEditable(row, column);
             }
         };
@@ -167,6 +193,30 @@ public class EducatorGUI extends JFrame{
 
         ArrayList<Content> contentList;
         contentList = Content.getList(courseName);
+        for (Content content: contentList){
+            row_content_list = new Object[]{content.getId(),content.getContentName(),content.getCourse_belong_to()};
+            mdl_content_list.addRow(row_content_list);
+        }
+
+        tbl_contents.setModel(mdl_content_list);
+    }
+
+    public static void updateContentsTable(DefaultTableModel mdl_content_list,Object[] row_content_list,JTable tbl_contents,ArrayList<Content> contentList){
+        DefaultTableModel clearModel = (DefaultTableModel) tbl_contents.getModel();
+        clearModel.setRowCount(0);
+
+        mdl_content_list = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+
+                return false;
+
+                //return super.isCellEditable(row, column);
+            }
+        };
+        Object[] col_content_list = {"ID","Content Name","Course That Content Belongs"};
+        mdl_content_list.setColumnIdentifiers(col_content_list);
+
         for (Content content: contentList){
             row_content_list = new Object[]{content.getId(),content.getContentName(),content.getCourse_belong_to()};
             mdl_content_list.addRow(row_content_list);

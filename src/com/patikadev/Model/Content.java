@@ -46,6 +46,29 @@ public class Content {
         return false;
     }
 
+    public static ArrayList<Content> searchContentList(String name,String courseName){
+        String query = "SELECT * FROM contents WHERE name LIKE '%{{name}}%' AND course_belong_to LIKE '%{{course_belong_to}}%'";
+        query = query.replace("{{name}}", name);
+        query = query.replace("{{course_belong_to}}", courseName);
+        ArrayList<Content> contentList = new ArrayList<>();
+        ArrayList<Quiz> quizList = new ArrayList<>();
+        Content obj;
+        try {
+            Statement st = DBConnector.getInstance().createStatement();
+            ResultSet rs = st.executeQuery(query);
+            while (rs.next()){
+
+                quizList = Quiz.getList("name");
+                obj = new Content(rs.getInt("id"),rs.getString("name"),rs.getString("course_belong_to"),rs.getString("content_desc"),rs.getString("content_link"),quizList);
+
+                contentList.add(obj);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return contentList;
+    }
+
     public static Content getContentByID(String id){
         Content obj = null;
         try {
