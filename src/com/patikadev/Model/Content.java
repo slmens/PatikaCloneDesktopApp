@@ -15,7 +15,7 @@ public class Content {
     private String course_belong_to;
     private String contentDescription;
     private String contentLink;
-    private int isCompleted;
+    private boolean isCompleted = false;
     ArrayList<Quiz> quizArray = new ArrayList<>();
 
     public Content(int id, String contentName, String course_belong_to,String contentDescription,String contentLink,ArrayList<Quiz> quizArr) {
@@ -137,6 +137,14 @@ public class Content {
         }
 
         return contentList;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
     }
 
     public ArrayList<Quiz> getQuizArray() {

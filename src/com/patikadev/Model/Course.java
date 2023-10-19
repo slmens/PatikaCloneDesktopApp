@@ -170,6 +170,24 @@ public class Course {
         }
     }
 
+    public static boolean unregister(int student_id,int course_id){
+        String query = "DELETE FROM studentcourseenrollment WHERE student_id = ? AND course_id = ?";
+
+        if (isEnrolled(student_id,course_id)){
+            return false;
+        }else {
+            try {
+                PreparedStatement st = DBConnector.getInstance().prepareStatement(query);
+                st.setInt(1,student_id);
+                st.setInt(2,course_id);
+
+                return st.executeUpdate() != -1;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     public int getId() {
         return id;
     }
