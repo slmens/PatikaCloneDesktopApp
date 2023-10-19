@@ -74,6 +74,28 @@ public class Course {
         return courseList;
     }
 
+    public static ArrayList<Course> getListByPatikaID(int patika_id){
+        ArrayList<Course> courseList = new ArrayList<>();
+        Course obj;
+        try {
+            Statement st = DBConnector.getInstance().createStatement();
+            ResultSet rs = st.executeQuery("SELECT * FROM course WHERE patika_id = "+patika_id);
+            while (rs.next()){
+                int id = rs.getInt("id");
+                int userId = rs.getInt("user_id");
+                int patikaId = rs.getInt("patika_id");
+                String courseName = rs.getString("name");
+                String courseLang = rs.getString("lang");
+                obj = new Course(id,userId,patikaId,courseName,courseLang);
+                courseList.add(obj);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return courseList;
+    }
+
     public static boolean add(int user_id, int patika_id,String name, String lang){
         String query = "INSERT INTO course (user_id,patika_id,name,lang) VALUES (?,?,?,?)";
         try {
@@ -106,6 +128,46 @@ public class Course {
         }
 
         return false;
+    }
+
+    public static boolean enroll(int student_id,int course_id){
+        String query = "INSERT INTO studentcourseenrollment (student_id,course_id) VALUES (?,?)";
+
+        if (isEnrolled(student_id,course_id)){
+            try {
+                PreparedStatement st = DBConnector.getInstance().prepareStatement(query);
+                st.setInt(1,student_id);
+                st.setInt(2,course_id);
+
+                return st.executeUpdate() != -1;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }else {
+            return false;
+        }
+    }
+
+    public static boolean isEnrolled(int student_id,int course_id){
+        String query = "SELECT * FROM studentcourseenrollment WHERE student_id = ? AND course_id = ? ";
+
+        try {
+            PreparedStatement st = DBConnector.getInstance().prepareStatement(query);
+            st.setInt(1,student_id);
+            st.setInt(2,course_id);
+
+            ResultSet rs = st.executeQuery();
+
+            if (rs.next()){
+                return false;
+                //enrolled
+            }else {
+                return true;
+                // not enrolled
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public int getId() {
