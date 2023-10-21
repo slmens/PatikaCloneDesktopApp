@@ -84,6 +84,17 @@ public class StudentGUI extends JFrame{
         myCourseMenu.add(deleteCourse);
         tbl_my_courses.setComponentPopupMenu(myCourseMenu);
 
+        contentMenu = new JPopupMenu();
+        JMenuItem lookContent = new JMenuItem("Enter To The Content");
+        contentMenu.add(lookContent);
+        tbl_contents.setComponentPopupMenu(contentMenu);
+
+        lookContent.addActionListener(e -> {
+            String ContentID = (tbl_contents.getValueAt(tbl_contents.getSelectedRow(),0).toString());
+            ContentLookGUI contentLookGUI = new ContentLookGUI(ContentID,student);
+
+        });
+
         deleteCourse.addActionListener(e -> {
             int studentID = this.student.getId();
             int courseID = Integer.parseInt(tbl_my_courses.getValueAt(tbl_my_courses.getSelectedRow(),0).toString());
@@ -120,7 +131,7 @@ public class StudentGUI extends JFrame{
 
         tbl_my_courses.getSelectionModel().addListSelectionListener(e -> {
             String courseName = tbl_my_courses.getValueAt(tbl_my_courses.getSelectedRow(),1).toString();
-            updateContents(mdl_content_list,row_content_list,tbl_contents,courseName);
+            updateContents(mdl_content_list,row_content_list,tbl_contents,courseName,student);
         });
 
 
@@ -131,7 +142,7 @@ public class StudentGUI extends JFrame{
         });
     }
 
-    public static void updateContents(DefaultTableModel mdl_content_list, Object[] row_content_list, JTable tbl_contents, String course_belong_to){
+    public static void updateContents(DefaultTableModel mdl_content_list, Object[] row_content_list, JTable tbl_contents, String course_belong_to,Student student){
         DefaultTableModel clearModel = (DefaultTableModel) tbl_contents.getModel();
         clearModel.setRowCount(0);
 
@@ -152,7 +163,7 @@ public class StudentGUI extends JFrame{
 
         for (Content cont:contentList){
 
-            if (cont.isCompleted()){
+            if (Content.isStudentCompletedContent(student.getId(),cont.getId())){
                 isCompleted = "Yes!";
             }else {
                 isCompleted = "No!";

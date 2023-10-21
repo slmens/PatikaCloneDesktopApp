@@ -46,6 +46,39 @@ public class Content {
         return false;
     }
 
+    public static boolean studentCompleteContent(int student_id,int content_id){
+        String query = "Insert INTO student_complete_content (user_id,content_id) VALUES (?,?)";
+        try {
+            PreparedStatement st = DBConnector.getInstance().prepareStatement(query);
+            st.setInt(1,student_id);
+            st.setInt(2,content_id);
+
+            return st.executeUpdate() != -1;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean isStudentCompletedContent(int student_id,int content_id){
+        String query = "SELECT * FROM student_complete_content WHERE user_id = ? AND content_id = ?";
+
+        try {
+            PreparedStatement st = DBConnector.getInstance().prepareStatement(query);
+            st.setInt(1,student_id);
+            st.setInt(2,content_id);
+            ResultSet set = st.executeQuery();
+
+            if (set.next()){
+                return true;
+                // yani tamamlamış
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
     public static ArrayList<Content> searchContentList(String name,String courseName){
         String query = "SELECT * FROM contents WHERE name LIKE '%{{name}}%' AND course_belong_to LIKE '%{{course_belong_to}}%'";
         query = query.replace("{{name}}", name);

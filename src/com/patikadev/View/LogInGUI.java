@@ -18,6 +18,7 @@ public class LogInGUI extends JFrame {
     private JTextField txt_user_login_name;
     private JTextField txt_user_login_pass;
     private JButton btn_user_login;
+    private JButton btn_signup;
 
     public LogInGUI(){
         add(wrapper);
@@ -48,10 +49,13 @@ public class LogInGUI extends JFrame {
                             break;
 
                     }
-
                     dispose();
                 }
             }
+        });
+        btn_signup.addActionListener(e -> {
+            SignUpGUI signUpGUI = new SignUpGUI();
+            dispose();
         });
     }
 

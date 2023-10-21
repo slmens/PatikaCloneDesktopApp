@@ -4,9 +4,12 @@ import com.patikadev.Helper.Constants;
 import com.patikadev.Helper.Helper;
 import com.patikadev.Model.Content;
 import com.patikadev.Model.Quiz;
+import com.patikadev.Model.Student;
+import com.patikadev.Model.User;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
+import java.time.chrono.HijrahEra;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -28,8 +31,12 @@ public class ContentLookGUI extends JFrame{
     ArrayList<Quiz> quizList = new ArrayList<>();
     Quiz quiz;
     private String selectedRadioText;
+    private User user;
+    private boolean isAllQuizAnswered = false;
+    int quizCountWeCurrentlyIn;
+    int counter;
 
-    public ContentLookGUI(String selectedContentID) {
+    public ContentLookGUI(String selectedContentID,User user) {
         this.selectedContentID = selectedContentID;
         add(wrapper);
         setSize(1000,500);
@@ -50,32 +57,69 @@ public class ContentLookGUI extends JFrame{
         lbl_desc.setText(content.getContentDescription());
         lbl_youtube_link.setText(content.getContentLink());
 
-        updateQuiz(0);
+        int quizQuestNumber = howMuchQuiz();
+        quizCountWeCurrentlyIn = 1;
+        counter = 0;
+        updateQuiz(counter);
 
-
+        if (user.getType().equals("student")){
+            if (Content.isStudentCompletedContent(user.getId(),content.getId())){
+                completeTheContentButton.setText("COMPLETED");
+                completeTheContentButton.setEnabled(false);
+            };
+        }
 
 
         btn_submit_button.addActionListener(e -> {
-            /*// öncelikle bir tane radio işaretlenmiş olduğundan emin oluyorum / sonra o radio doğru mu diye kontrol ediyorum doğruysa doğru diyorum ve diğer soruya geçiyorum yanlış ise
+            // öncelikle bir tane radio işaretlenmiş olduğundan emin oluyorum / sonra o radio doğru mu diye kontrol ediyorum doğruysa doğru diyorum ve diğer soruya geçiyorum yanlış ise
             // yanlış diyorum ve bekliyorum doğru yapana kadar /
 
+            if (!Objects.equals(user.getType(), "student")){
+                Helper.showMessage("You can't answer quiz because you are not student!","Warning!");
 
-            if (lbl_first_radio.isSelected() || lbl_second_radio.isSelected() || lbl_third_radio.isSelected() || lbl_fourth_radio.isSelected()){
-                if (Objects.equals(selectedRadioText, quiz.getQuizTrueAnswer())){
-                    Helper.showMessage("You answer correct this quiz!","Success!");
-                    Quiz.trueAnswered(quiz.getQuizQuestion());
+            } else {
+                if (isAllQuizAnswered){
+                    Helper.showMessage("You answered all the questions!","Warning!");
+                }else if (lbl_first_radio.isSelected() || lbl_second_radio.isSelected() || lbl_third_radio.isSelected() || lbl_fourth_radio.isSelected()){
+                    if (Objects.equals(selectedRadioText, quiz.getQuizTrueAnswer())){
+                        Helper.showMessage("You answer correct this quiz!","Success!");
+                        quizCountWeCurrentlyIn += 1;
+                        updateQuiz(counter);
+                        if (quizCountWeCurrentlyIn > quizQuestNumber){
+                            isAllQuizAnswered = true;
+                        }
+                        counter++;
+                    }else {
+                        Helper.showMessage("Wrong choice!","Warning!");
+                    }
+                }else{
+                    Helper.showMessage("Please choose an answer!","Warning!");
                 }
-            }else{
-                Helper.showMessage("Please choose an answer!","Warning!");
             }
-            */
-
-            Helper.showMessage("You can't answer quiz because you are not student!","Warning!");
 
         });
         completeTheContentButton.addActionListener(e -> {
             // Bütün quizler bitmiş mi onu kontrol et/ bitmişse complete yap ve o contenti database de complete yap / content listte de görünsün bu ana ekranda
-            dispose();
+            // sonra da bu ekran tekrar açıldığı zaman başta bir kontrol yap eğer bu student bu contenti bitirmişse you already complete that olsun bu tuş ve enabled olmasın
+
+            if (user.getType().equals("student")){
+                if (isAllQuizAnswered){
+                    boolean result = Content.studentCompleteContent(user.getId(),content.getId());
+                    if (result){
+                        Helper.showMessage("You complete this content!","Success!");
+                    }else {
+                        Helper.showMessage("There is something wrong!","Error!");
+                    }
+                    //student id ve content id olan bir table yap ana sayfada contentleri çekerken aynı zamanda bu tableı çekersin ve bu content tamamlanmışsa iscompleted YES dersin
+                    dispose();
+                }else{
+                    Helper.showMessage("You didn't complete the quiz!","Warning!");
+                }
+            }else {
+                dispose();
+            }
+
+
         });
 
         ActionListener listener = e -> {
@@ -100,10 +144,14 @@ public class ContentLookGUI extends JFrame{
 
 
 
+    public int howMuchQuiz(){
+        ArrayList<Quiz> quizList = content.getQuizArray();
+        return quizList.size();
+    }
 
     public void updateQuiz(int quizCount){
         int rand = randNumber();
-        quizList = content.getQuizArray();
+        quizList = Quiz.getList(content.getContentName());
         quiz = quizList.get(quizCount);
 
         lbl_quiz_question.setText(quiz.getQuizQuestion());

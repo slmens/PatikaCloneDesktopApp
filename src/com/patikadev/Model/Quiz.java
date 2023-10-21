@@ -26,17 +26,6 @@ public class Quiz {
         this.quizFalseAnswer3 = quizFalseAnswer3;
     }
 
-    public static boolean trueAnswered(String quizQuestion){
-        String query = "UPDATE quiz SET is_answered = 1 WHERE quiz_question = ? ";
-        try {
-            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
-            pr.setString(1,quizQuestion);
-
-            return pr.executeUpdate() != -1;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public static boolean add(Quiz quiz){
         String query = "INSERT INTO quiz (quiz_content,quiz_question,quiz_true_answer,quiz_false_answer_1,quiz_false_answer_2,quiz_false_answer_3) VALUES (?,?,?,?,?,?)";

@@ -83,7 +83,7 @@ public class EducatorGUI extends JFrame{
         contentLook.addActionListener(e -> {
             try {
                 String selectedContentID = tbl_contents.getValueAt(tbl_contents.getSelectedRow(),0).toString();
-                ContentLookGUI contentLookGUI = new ContentLookGUI(selectedContentID);
+                ContentLookGUI contentLookGUI = new ContentLookGUI(selectedContentID,educator);
             }catch (Exception ex){
                 //Helper.showMessage("Please select the row properly!","Warning!" );
             }
