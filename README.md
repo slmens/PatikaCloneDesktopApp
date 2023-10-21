@@ -14,4 +14,6 @@ Let's move on to our next user, our educators. Educators can't do most of the th
 
 And finally, students. Students cannot do anything except enroll in courses on the Patika's, look at the course content, and solve quizzes.
 
+![AnimationStudent](https://github.com/slmens/PatikaCloneDesktopApp/assets/99343829/8dc37703-28f8-4547-966f-5916988ec97c)
+
 And thats it. Thank you for reading.
