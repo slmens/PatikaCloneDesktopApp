@@ -17,3 +17,12 @@ And finally, students. Students cannot do anything except enroll in courses on t
 ![AnimationStudent](https://github.com/slmens/PatikaCloneDesktopApp/assets/99343829/8dc37703-28f8-4547-966f-5916988ec97c)
 
 And thats it. Thank you for reading.
+
+---
+
+Bundan sonraki kısım projeyi inceleyecek Patika+ bootcamp eğitmeni içindir
+(The next part is for the Patika+ bootcamp instructor who will review the project) :
+- İnceleme işini kolaylaştıracak bir pdf : [tourismagency.pdf](https://github.com/slmens/PatikaCloneDesktopApp/files/13279018/tourismagency.pdf)
+
+- Projeyi kısaca anlatan loom videosu: 
+
