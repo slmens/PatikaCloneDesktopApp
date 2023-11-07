@@ -18,11 +18,4 @@ And finally, students. Students cannot do anything except enroll in courses on t
 
 And thats it. Thank you for reading.
 
----
-
-Bundan sonraki kısım projeyi inceleyecek Patika+ bootcamp eğitmeni içindir
-(The next part is for the Patika+ bootcamp instructor who will review the project) :
-- İnceleme işini kolaylaştıracak bir pdf : [tourismagency.pdf](https://github.com/slmens/PatikaCloneDesktopApp/files/13279018/tourismagency.pdf)
-
-- Projeyi kısaca anlatan loom videosu: 
 
